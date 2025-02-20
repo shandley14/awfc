@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,500;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Oxanium:wght@200;300;400;500;600;700;800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+    font-family: 'Fira Sans', sans-serif;
+    scroll-behavior: smooth;
+    margin: 0;
+}
+
+.bg-orange-600 {
+    background-color: #ea580c;
+}
+.border-orange-600 {
+    border-color: #f75802;
+}
+.conc{
+    word-wrap: none;
+    word-break: keep-all;
+}
+.hslider::-webkit-scrollbar{
+  background: transparent;
+  display: none;
+}
+.bg-slate-100 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(241 245 249 / var(--tw-bg-opacity));
+}
+.bg-slate-900{
+    background-color: #040921;
+}
+.bg-white{
+    background-color: white;
+}
+.bg-black{
+    background-color: black;
+}
+.left-zero{
+    left: 0!important;
+    color: #212f4b;
+}
+
+.semip:hover div{
+    display: block !important;
+}
