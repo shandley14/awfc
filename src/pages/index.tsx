@@ -17,7 +17,7 @@ const getTodayInUserTimezone = () => {
     return new Date(now.getFullYear(), now.getMonth(), now.getDate());
 };
 
-const Matches = () => {
+const Home = () => {
     const { themeClass, setMobile } = useApp();
     const router = useRouter();
     const [fixtures, setFixtures] = useState<any>([]);
@@ -37,27 +37,37 @@ const Matches = () => {
 
     // ✅ Ensure URL has `date` parameter when page loads
     useEffect(() => {
-        if (!router.query.date) {
-            const todayFormatted = format(getTodayInUserTimezone(), "yyyy-MM-dd");
-            router.replace(`/?date=${todayFormatted}`, undefined, { shallow: true });
-        } else {
-            const queryDate = parseISO(router.query.date as string);
-            if (isValid(queryDate)) {
-                setSelectedDate(queryDate);
-            }
-        }
-    }, [router.query.date]);
+      if (!router.isReady) return; // ✅ Ensure query params are loaded before running effect
+  
+      const urlDate = router.query.date as string | undefined; // ✅ Explicitly treat as string
+  
+      if (typeof urlDate === "undefined") {
+          // ✅ Only set today's date if `date` is completely missing from the URL
+          const todayFormatted = format(getTodayInUserTimezone(), "yyyy-MM-dd");
+          router.replace(`/?date=${todayFormatted}`, undefined, { shallow: true });
+      } else {
+          // ✅ Only update state if the `date` is valid and different from current state
+          const queryDate = parseISO(urlDate);
+          if (isValid(queryDate) && (!selectedDate || selectedDate.getTime() !== queryDate.getTime())) {
+              setSelectedDate(queryDate);
+          }
+      }
+  }, [router.isReady, router.query.date]);
 
     // ✅ Handle Date Change - Updates both state and URL
     const handleDateChange = (newDate: Date | string) => {
-        const parsedDate = typeof newDate === "string" ? new Date(newDate) : newDate;
-        if (!parsedDate || isNaN(parsedDate.getTime())) return;
-
-        const formattedDate = format(parsedDate, "yyyy-MM-dd");
-        router.push(`/?date=${formattedDate}`, undefined, { shallow: true });
-
-        setSelectedDate(parsedDate);
-    };
+      const parsedDate = typeof newDate === "string" ? new Date(newDate + "T00:00:00") : newDate;
+      if (!parsedDate || isNaN(parsedDate.getTime())) return;
+  
+      const formattedDate = format(parsedDate, "yyyy-MM-dd");
+  
+      // ✅ Update the URL only if the date actually changes
+      if (router.query.date !== formattedDate) {
+          router.push(`/?date=${formattedDate}`, undefined, { shallow: true });
+      }
+  
+      setSelectedDate(parsedDate);
+  };
 
     const determineLeagueSeason = (leagueObj: any, selected: Date) => {
         if (leagueObj.seasons && leagueObj.seasons.length > 0) {
@@ -123,7 +133,7 @@ const Matches = () => {
     return (
         <MainLayout setLinear={setLinear} title={"matches"}>
             <div className={`flex flex-col min-h-[92vh] w-full ${themeClass.bg}`}>
-                <LeagueSlider active={-1} setLinear={setLinear} />
+                
                 <div className="flex flex-col h-full justify-between w-full px-3">
                     <div className={`${themeClass.border} w-full border-x-2 border-b-2`}>
                         <div className="flex flex-col items-center">
@@ -156,4 +166,4 @@ const Matches = () => {
     );
 };
 
-export default Matches;
+export default Home;

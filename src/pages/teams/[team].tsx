@@ -1,90 +1,72 @@
-import Image from 'next/image'
-import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
-import { useApp } from '../../components/constants/contexts/AppContext'
-import LinearLoader from '../../components/constants/LinearProgress'
-import NavBar from '../../components/constants/NavBar'
-import SideBar from '../../components/constants/SideBar'
-import TeamInfo from '../../components/teams/TeamInfo'
-import { getTeams } from '../../helpers/apiCalls'
-// import teams from '..'
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import { useApp } from '../../components/constants/contexts/AppContext';
+import LinearLoader from '../../components/constants/LinearProgress';
+import NavBar from '../../components/constants/NavBar';
+import SideBar from '../../components/constants/SideBar';
+import TeamInfo from '../../components/teams/TeamInfo';
+import { getTeams, getSquad } from '../../helpers/apiCalls';
 
 const Team = () => {
-  const { themeClass, setMobile, isDark } = useApp()
-  const [ teamDetails, setTeamDetails ] = useState<any>(null)
-  const [ linear, setLinear ] = useState<boolean>(false)
-  const router =  useRouter()
-  const { team } = router.query
+  const { themeClass } = useApp();
+  const [teamDetails, setTeamDetails] = useState<any>(null);
+  const [linear, setLinear] = useState<boolean>(false);
+  const [players, setPlayers] = useState<any[]>([]);
+  const router = useRouter();
+  const { team } = router.query;
 
-  console.log(team);
+  const getTeamById = async () => {
+    if (!team) return;
 
-  const getTeamById = async () => { 
-    const opts = {
-      params: { id: team },
-      headers: { 'Content-Type': 'application/json' }
-    }
+    const opts = { params: { id: team }, headers: { 'Content-Type': 'application/json' } };
     const data = await getTeams(opts);
-    console.log(data)
-   if(data.response.length !== 0) setTeamDetails(data.response[0])
-  }
-  
-  useEffect(()=> {
-    if(team)getTeamById()
-    console.log(teamDetails)
-  },[team])
+    if (data.response.length !== 0) setTeamDetails(data.response[0]);
+
+    const playerData = await getSquad({ params: { team: team }, headers: { 'Content-Type': 'application/json' } });
+    if (playerData && playerData.length !== 0) setPlayers(playerData);
+  };
+
+  useEffect(() => {
+    if (team) getTeamById();
+  }, [team]);
 
   return (
-    <div className={`flex flex-col ${themeClass.bg} w-full h-screen overflow-hidden`}>
+    <div className={`flex flex-col ${themeClass.bg} w-full min-h-screen`}>
       {linear && <LinearLoader />}
-    <NavBar />
-    <div className="flex">
-        <SideBar active='teams' setLinear={setLinear} />
-        <div onClick={()=> setMobile(false)} className={`flex ${themeClass.bgAlt} ${themeClass.text} flex-col px-3 w-full h-[92vh] overflow-y-auto`}>
-          <div className={`flex min-h-full flex-col w-full ${themeClass.bg}`}>
-            <div className="flex h-[40vh] items-center tablet:h-[50vh] overflow-hidden">
-              <img className='min-w-full min-h-full object-cover' src={teamDetails?.venue.image} alt="" />
+      <NavBar />
+      <div className="flex flex-col items-center w-full px-4 py-6">
+        {teamDetails ? (
+          <>
+            {/* Team Banner */}
+            <div className="w-full max-w-4xl">
+              <img className="w-full h-48 object-cover rounded-md" src={teamDetails?.venue.image} alt="" />
             </div>
-            <div className="relative">
-              <div className={`absolute ${themeClass.bg} left-1/2 ${isDark && ' shadow-gray-800'}
-               -top-[10em] shadow-2xl  p-2 z-[30]  -translate-x-1/2 flex flex-col w-full phone:w-11/12`}>
-                <div className="flex w-full px-3 items-center justify-between">
-                  <div className="flex items-center">
-                    <Image className="min-h-full object-cover aspect-square rounded-full my-2" height="80" width="80" src={teamDetails?.team.logo} alt="" />
-                    <p className="font-semibold ml-3 text-2xl">{teamDetails?.team.name.toUpperCase()}</p>
-                  </div>
-                  <button className="py-1 px-3 bg-orange-600">Like</button>
-                </div>
-                <div className="grid gap-y-8 px-3 text-xs phone:text-base grid-cols-2 tablet:grid-cols-3 w-full">
-                  <div className="flex flex-col">
-                    <p className='text-slate-300'>COUNTRY</p>
-                    <p className="text-base phone:text-xl">{teamDetails?.team.country.toUpperCase()}</p>
-                  </div>
-                  <div className="flex flex-col">
-                    <p className='text-slate-300'>FOUNDED</p>
-                    <p className="text-base phone:text-xl">{teamDetails?.team.founded}</p>
-                  </div>
-                  <div className="flex flex-col">
-                    <p className='text-slate-300'>VENUE</p>
-                    <p className="text-base phone:text-xl">{teamDetails?.venue.name.toUpperCase()}</p>
-                  </div>
-                  <div className="flex flex-col">
-                    <p className='text-slate-300'>CITY</p>
-                    <p className="text-base phone:text-xl">{teamDetails?.venue.city.toUpperCase()}</p>
-                  </div>
-                  <div className="flex flex-col">
-                    <p className='text-slate-300'>ADDRESS</p>
-                    <p className="text-base phone:text-lg">{teamDetails?.venue.address}</p>
-                  </div>
-                </div>
-              </div>
-              <TeamInfo />
+
+            {/* Team Info Section */}
+            <div className="w-full max-w-4xl mt-4 text-center">
+              <Image className="mx-auto rounded-full" height="80" width="80" src={teamDetails?.team.logo} alt={teamDetails?.team.name} />
+              <h1 className="mt-2 text-2xl font-bold">{teamDetails?.team.name || 'Unknown Team'}</h1>
+              <p className="text-gray-500">{teamDetails?.team.country || 'Unknown Country'}</p>
             </div>
-          </div>
-        </div>
-        </div>
+
+            {/* Team Details Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 mt-6 w-full max-w-3xl text-center">
+              <div><p className="text-gray-400">Founded</p><p className="font-semibold">{teamDetails?.team.founded || 'N/A'}</p></div>
+              <div><p className="text-gray-400">Venue</p><p className="font-semibold">{teamDetails?.venue?.name || 'N/A'}</p></div>
+              <div><p className="text-gray-400">City</p><p className="font-semibold">{teamDetails?.venue?.city || 'N/A'}</p></div>
+              <div><p className="text-gray-400">Address</p><p className="font-semibold">{teamDetails?.venue?.address || 'N/A'}</p></div>
+            </div>
+
+            {/* Players Section */}
+            <TeamInfo players={players} />
+          </>
+        ) : (
+          <p className="text-lg">Loading team details...</p>
+        )}
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Team
-
+export default Team;

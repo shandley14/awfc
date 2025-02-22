@@ -41,9 +41,7 @@ const Teams = () => {
             <SideBar active='teams' setLinear={setLinear} />
             <div onClick={()=> setMobile(false)} className={`flex ${themeClass.bgAlt} ${themeClass.text} flex-col px-3 w-full h-[92vh] overflow-y-auto`}>
               <div className={`flex flex-col w-full ${themeClass.bg}`}>
-                <LeagueTeamSlider setLeague={ setLeague } handleLeagueTeams={ function (id: number): void {
-              throw new Error('Function not implemented.');
-            } } /> 
+                 
                 <div className="flex flex-col h-fl w-full px-3">
                   <div className={` w-full border-x-2 border-b-2 ${themeClass.border}`}>
                     <h1 className='my-3 w-full flex ml-3'>Teams currently in&nbsp;<p className='font-semibold'>{ league.name }</p></h1>

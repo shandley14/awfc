@@ -38,7 +38,7 @@ const SideBar: React.FC<Props> = ({ active, setLinear }) => {
 					themeClass.border
 				} border-r-2 tablet:h-full h-[91.75vh] absolute tablet:static mobile`}
 			>
-				<div className="flex flex-col mt-4">
+				<div className="flex flex-row mt-4">
 					<Link href={`/`}>
 						<div
 							onClick={handleNavigation}
@@ -57,28 +57,6 @@ const SideBar: React.FC<Props> = ({ active, setLinear }) => {
 								className="text-xl text-[#ececec]"
 							/>
 							<span className={`ml-3 text-md`}>Home</span>
-						</div>
-					</Link>
-					<Link href={`/matches`}>
-						<div
-							onClick={handleNavigation}
-							className={`flex cursor-pointer mt-2 font-semibold items-center border-l-2 ${
-								themeClass.border1
-							}
-             ${
-								active === "matches"
-									? `${themeClass.textAlt1} border-${themeClass.color1}`
-									: `${themeClass.text}`
-							} px-4 pr-6 py-1`}
-						>
-							<BiFootball
-								fill={
-									active === "matches" ? themeClass.color : themeClass.textc
-								}
-								stroke={"#ececec"}
-								className="text-xl text-[#ececec]"
-							/>
-							<span className={`ml-3 text-md`}>Matches</span>
 						</div>
 					</Link>
 					<Link href={`/leagues`}>

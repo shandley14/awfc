@@ -25,7 +25,6 @@ const MainLayout = ({linear, title, setLinear, children}: MainLayoutProps) => {
 				{linear && <LinearLoader />}
 				<NavBar />
 				<div className="flex overflow-hidden h-screen">
-					<SideBar active="matches" setLinear={setLinear} />
 					<div
 						onClick={() => setMobile(false)}
 						className={`flex ${themeClass.bgAlt} ${themeClass.text} flex-col px-3 w-full h-[92vh] overflow-y-auto`}

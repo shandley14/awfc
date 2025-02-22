@@ -9,14 +9,17 @@ export const getLeagues = async (_opts?: object) => {
         return [];
     }
 
-    const manualIds = [44, 82]; // ✅ Manually added league IDs
+    const manualIds = [44, 82, 1130, 1117]; // ✅ Manually added league IDs
 
     // ✅ Filter leagues that contain "Women" in their name OR are in manualIds
-    const filteredLeagues = data.response.filter(
-        (league: any) => 
-            //league.league.name.toLowerCase().includes("women") || 
-            manualIds.includes(league.league.id)
-    );
+    const filteredLeagues = data.response.filter((league: any) => {
+    const name = league.league.name.toLowerCase();
+
+    // ✅ Match any variation that contains "fem"
+    const femenRegex = /fem/; 
+
+    return femenRegex.test(name) || name.includes("women") || manualIds.includes(league.league.id);
+});
 
     // ✅ Sort leagues alphabetically
     return filteredLeagues.sort((a, b) => a.league.name.localeCompare(b.league.name));
@@ -65,6 +68,20 @@ export const getPlayers = async (_opts?: object) => {
     const data = await getApi('players', options);
     return data
 }
+
+export const getSquad = async (_opts?: object) => {
+    const options = { ..._opts, headers: footHeaders };
+    const data = await getApi("players/squads", options); // ✅ Correct API endpoint
+
+    console.log("Raw Player Data:", data); // ✅ Debugging API response
+
+    if (!data || !data.response || !Array.isArray(data.response)) {
+        console.error("Error: Invalid player squad response", data);
+        return []; // ✅ Return empty array if response is invalid
+    }
+
+    return data.response[0]?.players || []; // ✅ Ensure correct data structure
+};
 
 export const getTeams = async (_opts?: object) => {
     const options = {..._opts, headers: footHeaders}

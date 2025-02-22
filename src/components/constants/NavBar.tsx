@@ -4,11 +4,14 @@ import React from 'react'
 import {  BiMoon, BiSun, BiUserCircle } from 'react-icons/bi';
 import { useApp } from './contexts/AppContext';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useState } from 'react';
 import SimProfile from './SimProfile';
+import SideBar from './SideBar';
 
 const NavBar = () => {
     const { themeClass, setIsDark, isDark } = useApp();
     const { isAuthenticated, loginWithRedirect } = useAuth0();
+    const [linear, setLinear] = useState<boolean>(false);
 
   return (
     <div className={`flex w-full ${themeClass.bg} ${themeClass.border} items-center justify-between py-3 px-4 border-b-2`}>
@@ -18,6 +21,7 @@ const NavBar = () => {
                 <Image className='cursor-pointer' src="/logo.png" alt="" width={80} height={26}/>
                 </>
             </Link>
+            <SideBar active='' setLinear={setLinear} />
         </div>
         {isAuthenticated?(
             <div className="flex items-center">
@@ -25,6 +29,7 @@ const NavBar = () => {
                     <BiUserCircle className={`text-3xl cursor-pointer p-1 ${themeClass.text} ${themeClass.bgAlt} rounded-full ${isDark && 'bg-[#212f4b]'}`} />
                     <SimProfile />
                 </div>
+                
                 {isDark?(
                 <BiSun onClick={()=> setIsDark(false)} className={`${themeClass.text} text-2xl ml-4 cursor-pointer`} />
                  ):(

@@ -52,7 +52,6 @@ const Feed = ({ leagueId }: { leagueId?: string }) => {
       {linear && <LinearLoader />}
       <NavBar />
       <div className="flex">
-        <SideBar active="home" setLinear={setLinear} />
         <div
           onClick={() => setMobile(false)}
           className={`flex ${themeClass.bgAlt} ${themeClass.text} flex-col px-3 pt-1 w-full h-[92vh] overflow-y-auto`}
