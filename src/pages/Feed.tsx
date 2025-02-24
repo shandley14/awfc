@@ -12,17 +12,20 @@ import Link from 'next/link';
 
 const DEFAULT_LEAGUE_ID = '39'; // Default to EPL, change later if needed
 
-const Feed = ({ leagueId }: { leagueId?: string }) => {
+// Accept an optional season prop along with leagueId.
+const Feed = ({ leagueId, season }: { leagueId?: string, season?: string | number }) => {
   const { themeClass, setMobile } = useApp();
   const [linear, setLinear] = useState(false);
   const [fixtures, setFixtures] = useState([]);
   const [standings, setStandings] = useState<any>(null);
 
   const currentLeague = leagueId || DEFAULT_LEAGUE_ID; // Use provided ID or fallback
+  // Use the passed season if provided; otherwise, fall back to the current season.
+  const currentSeason = season ? Number(season) : getCurrSeasonYear();
 
   const fetchFixtures = async () => {
     const opts = {
-      params: { season: getCurrSeasonYear(), league: currentLeague, date: date },
+      params: { season: currentSeason, league: currentLeague, date: date },
       headers: { 'Content-Type': 'application/json' }
     };
     const data = await getFixtures(opts);
@@ -31,7 +34,7 @@ const Feed = ({ leagueId }: { leagueId?: string }) => {
 
   const fetchStandings = async () => {
     const opts = {
-      params: { season: getCurrSeasonYear(), league: currentLeague },
+      params: { season: currentSeason, league: currentLeague },
       headers: { 'Content-Type': 'application/json' }
     };
     const data = await getStandings(opts);
@@ -41,8 +44,11 @@ const Feed = ({ leagueId }: { leagueId?: string }) => {
   useEffect(() => {
     fetchFixtures();
     fetchStandings();
-  }, [currentLeague]); // Re-fetch when league changes
+  }, [currentLeague, currentSeason]); // Re-fetch when league or season changes
 
+  useEffect(() => {
+    console.log("Fetching standings for:", leagueId, season);
+}, [leagueId, season]);
   // Derive league name either from standings or from the first fixture
   const leagueName =
     standings?.league?.name || fixtures?.[0]?.league?.name || 'League';

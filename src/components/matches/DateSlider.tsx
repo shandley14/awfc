@@ -1,39 +1,43 @@
-import moment from "moment";
-import React, { useState } from "react";
-import NavSlider from "../constants/NavSlider";
-import DatePicker from "./DatePicker";
+import React from 'react';
+import { addDays } from 'date-fns';
+import DatePicker from './DatePicker';
 
-type Props = {
-	date?: Date | string;
-	setDate?: React.Dispatch<React.SetStateAction<Date | string>>;
-};
+interface DateSliderProps {
+  date: Date;
+  setDate: React.Dispatch<React.SetStateAction<Date>>;
+}
 
-const DateSlider = ({ date, setDate }: Props) => {
-	const midDate = moment(date).format("YYYY-MM-DD");
-	const newdates = [
-	  moment(date).subtract(2, "days").format("YYYY-MM-DD"),
-	  moment(date).subtract(1, "days").format("YYYY-MM-DD"),
-	  midDate,
-	  moment(date).add(1, "days").format("YYYY-MM-DD"),
-	  moment(date).add(2, "days").format("YYYY-MM-DD"),
-	];
-  
-	return (
-	  <div className="flex items-center w-full justify-center ltop:flex-row flex-col px-3">
-		<div className="flex items-center flex-wrap space-y-1 mx-auto">
-		  {newdates.map((dateItem) => (
-			<label
-			  key={dateItem}
-			  onClick={() => setDate && setDate(new Date(dateItem + "T00:00:00"))}
-			  className="flex items-center mx-1 px-3 border-2 border-orange-600 cursor-pointer bg-orange-600 justify-center"
-			>
-			  {dateItem}
-			</label>
-		  ))}
-		</div>
-		<DatePicker date={date as Date} setDate={setDate!} />
-	  </div>
-	);
+const DateSlider: React.FC<DateSliderProps> = ({ date, setDate }) => {
+  const handlePrevDay = () => {
+    setDate(addDays(date, -1));
   };
+
+  const handleNextDay = () => {
+    setDate(addDays(date, 1));
+  };
+
+  return (
+    <div className="date-slider flex items-center space-x-2 mt-4">
+      {/* Left Arrow */}
+      <button
+        onClick={handlePrevDay}
+        className="px-3 py-1 border rounded hover:bg-gray-200"
+      >
+        &lt;
+      </button>
+
+      {/* DatePicker in the center */}
+      <DatePicker date={date} setDate={setDate} />
+
+      {/* Right Arrow */}
+      <button
+        onClick={handleNextDay}
+        className="px-3 py-1 border rounded hover:bg-gray-200"
+      >
+        &gt;
+      </button>
+    </div>
+  );
+};
 
 export default DateSlider;

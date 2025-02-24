@@ -6,6 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Link from 'next/link';
 import { useApp } from '../../components/constants/contexts/AppContext';
 
 export default function Standings({data}: any) {
@@ -33,7 +34,7 @@ export default function Standings({data}: any) {
               <TableCell sx={{color: isDark?'white':'black', ":hover": { cursor: 'pointer'}}} component="th" scope="row">
                <div className={`flex w-full ${isDark&&'text-white'} h-full items-center`}>
                 <p>{row.rank}</p>
-                <img className='w-[20px] bg-[] mx-2 h-[20px] object-cover' src={row.team.logo} alt="" />
+                <Link href={`/teams/${row.team.id}`}><img className='w-[20px] bg-[] mx-2 h-[20px] object-cover' src={row.team.logo} alt="" /></Link>
                 <p>{row.team.name}</p>
                </div>
               </TableCell>

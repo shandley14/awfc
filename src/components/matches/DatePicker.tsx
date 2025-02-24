@@ -14,23 +14,15 @@ type Props = {
 
 export default function DatePicker({ date, setDate }: Props) {
     const { isDark } = useApp();
+    const today = moment().format("YYYY-MM-DD"); // Today's date in URL format
+    const selectedDate = moment(date).format("YYYY-MM-DD"); // Ensure consistency with URL format
 
-    // ✅ Sync DatePicker's value with selected date
-    const [value, setValue] = React.useState<Moment | null>(
-        date && moment(date).isValid() ? moment(date) : moment()
-    );
-
-    // ✅ Update state when `date` prop changes (keeps DatePicker in sync)
-    React.useEffect(() => {
-        if (date && moment(date).isValid()) {
-            setValue(moment(date));
-        }
-    }, [date]);
+    // ✅ Keep the actual date value for the picker but display "Today" in the text input
+    const isToday = selectedDate === today;
 
     const handleChange = (newValue: Moment | null) => {
         if (newValue && moment(newValue).isValid()) {
-            setValue(newValue);
-            setDate(newValue.format("YYYY-MM-DD")); // ✅ Updates `index.tsx`
+            setDate(newValue.format("YYYY-MM-DD")); // Store in correct URL format
         }
     };
 
@@ -39,10 +31,17 @@ export default function DatePicker({ date, setDate }: Props) {
             <DesktopDatePicker
                 label="Select Date"
                 inputFormat="MM/DD/YYYY"
-                value={value}
+                value={moment(date).isValid() ? moment(date) : moment()}
                 onChange={handleChange}
                 renderInput={(params: TextFieldProps) => (
-                    <TextField {...params} sx={{ color: isDark ? "white" : "black" }} />
+                    <TextField
+                        {...params}
+                        inputProps={{
+                            ...params.inputProps,
+                            value: isToday ? "Today" : moment(date).format("MM/DD/YYYY"), // ✅ Override text display
+                        }}
+                        sx={{ color: isDark ? "white" : "black" }}
+                    />
                 )}
             />
         </LocalizationProvider>

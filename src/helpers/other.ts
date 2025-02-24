@@ -10,7 +10,7 @@ export const getCurrSeasonYear = () => {
     const currDate = moment();
     const currMonth = currDate.month();
     const currYear = currDate.year();
-    const startYear = currMonth < 6 ? currYear - 1 : currYear;
+    const startYear = currMonth < 6 ? currYear + 1 : currYear;
     return startYear;
 }
 

@@ -1,13 +1,17 @@
+// leagues/[id].tsx
 import { useRouter } from 'next/router';
 import Feed from '../Feed';
 
 const LeaguePage = () => {
   const router = useRouter();
-  const { id } = router.query; // Get league ID from URL
+  console.log("Router Query:", router.query);
 
-  if (!id) return <p>Loading...</p>;
+  const { id, season } = router.query; // Extract season as well
 
-  return <Feed leagueId={id} />;
+  if (!id || !season) return <p>Loading...</p>;
+
+  // Pass the season to the Feed component or use it as needed in your API calls
+  return <Feed leagueId={id} season={season} />;
 };
 
 export default LeaguePage;

@@ -38,7 +38,7 @@ const Match = ({ fix, setLinear }: any) => {
 				<div className="flex flex-col items-center cursor-pointer">
 					{/* <img src="" alt="h logo" /> */}
 					<img
-						className="aspect-square phone:max-w-[70px] xs:max-w-[60px] max-w-[40px]"
+						className="phone:max-w-[70px] xs:max-w-[60px] max-w-[40px]"
 						src={home.logo}
 						alt={home.name}
 					/>
@@ -51,7 +51,7 @@ const Match = ({ fix, setLinear }: any) => {
 						</p>
 						<div className="flex mx-3 flex-col items-center">
 							<img
-								className="xs:max-w-[50px] max-w-[30px] aspect-square h-[50px]"
+								className="xs:max-w-[50px] max-w-[30px] h-[50px]"
 								src={logo}
 								alt={name}
 							/>
@@ -65,7 +65,7 @@ const Match = ({ fix, setLinear }: any) => {
 					<>
 						<div className="flex mx-3 flex-col items-center">
 							<img
-								className="max-w-[50px] aspect-square h-[50px] rounded-full"
+								className="max-w-[50px] rounded-full"
 								src={logo}
 								alt={name}
 							/>
@@ -86,7 +86,7 @@ const Match = ({ fix, setLinear }: any) => {
 				>
 					{/* <img src="" alt="a logo" /> */}
 					<img
-						className="aspect-square phone:max-w-[70px] xs:max-w-[60px] max-w-[40px]"
+						className="phone:max-w-[70px] xs:max-w-[60px] max-w-[40px]"
 						src={away.logo}
 						alt={away.name}
 					/>

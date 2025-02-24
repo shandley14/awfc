@@ -2,9 +2,18 @@ import React, { useState } from "react";
 import { useApp } from "../constants/contexts/AppContext";
 import NavSlider from "../constants/NavSlider";
 
-type Props = {
-    players: any[];
+type Player = {
+    id: string;
+    name: string;
+    photo: string;
+    position: string;
+    number?: number;
 };
+
+type Props = {
+    players: Player[];
+};
+
 
 const TeamInfo: React.FC<Props> = ({ players }) => {
     const [content, setContent] = useState("Player");
@@ -15,11 +24,11 @@ const TeamInfo: React.FC<Props> = ({ players }) => {
     };
 
     // ✅ Group Players by Position
-    const groupedPlayers = players.reduce((acc, player) => {
+    const groupedPlayers: Record<string, Player[]> = players.reduce((acc, player) => {
         if (!acc[player.position]) acc[player.position] = [];
         acc[player.position].push(player);
         return acc;
-    }, {} as Record<string, any[]>);
+    }, {} as Record<string, Player[]>);
 
     return (
         <div className="desktop: xtab:mt-[4em] phone:mt-[6.5em] flex flex-col items-center px-2 w-full">
@@ -48,7 +57,7 @@ const TeamInfo: React.FC<Props> = ({ players }) => {
                                 <div key={position} className="border border-gray-300 rounded-lg p-3">
                                     <h3 className="font-bold text-lg text-center">{position}</h3>
                                     <ul className="grid grid-cols-2 phone:grid-cols-3 tablet:grid-cols-4 gap-2 mt-2">
-                                        {groupedPlayers[position].map((player) => (
+                                        {groupedPlayers[position].map((player: Player) => (
                                             <li key={player.id} className="flex flex-col items-center p-2">
                                                 <img src={player.photo} alt={player.name} className="w-12 h-12 rounded-full" />
                                                 <p className="font-semibold">{player.name}</p>

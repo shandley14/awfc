@@ -9,7 +9,7 @@ export const getLeagues = async (_opts?: object) => {
         return [];
     }
 
-    const manualIds = [44, 82, 1130, 1117]; // ✅ Manually added league IDs
+    const manualIds = [44, 82, 1130, 1117, 904]; // ✅ Manually added league IDs
 
     // ✅ Filter leagues that contain "Women" in their name OR are in manualIds
     const filteredLeagues = data.response.filter((league: any) => {
