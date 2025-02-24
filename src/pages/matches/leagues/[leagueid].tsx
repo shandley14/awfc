@@ -10,38 +10,61 @@ import LeagueSlider from '../../../components/matches/leagueSlider'
 import { getFixtures } from '../../../helpers/apiCalls'
 import newdate, { getCurrSeasonYear } from '../../../helpers/other'
 import DatePicker from "../../../components/matches/DatePicker";
+import { format } from "date-fns"; 
 
 const LeagueMatches = () => {
     const router = useRouter()
     const [linear, setLinear] = useState<boolean>(false)
-    const {themeClass, setMobile} = useApp()
+    const { themeClass, setMobile } = useApp()
     const [fixtures, setFixtures] = useState<any>([])
     const [date, setDate] = useState<Date | string>(newdate)
     const { leagueid } = router.query
 
-    const getFixByLeague = async () => {
-			const opts = {
-				params: { league: leagueid, season: getCurrSeasonYear(), date: date },
-				headers: { "Content-Type": "application/json" },
-			};
-			const data = await getFixtures(opts);
-			console.log(data);
-			setFixtures(data.response);
-		};
+    // ✅ Prevent hydration mismatch by waiting for router to be ready
+    if (!router.isReady) {
+        return <p>Loading...</p>;
+    }
 
+    // ✅ Ensure leagueid is a valid number
+    const leagueIdNumber = typeof leagueid === "string" ? parseInt(leagueid, 10) : 0;
+    if (leagueIdNumber === undefined || isNaN(leagueIdNumber)) return; 
+
+    const getFixByLeague = async () => {
+        const formattedDate = typeof date === "string" ? date : format(date, "yyyy-MM-dd");
+
+        const opts = {
+            params: { 
+                league: leagueIdNumber, // ✅ Ensured as number
+                season: getCurrSeasonYear(),
+                date: formattedDate, 
+            },
+            headers: { "Content-Type": "application/json" },
+        };
+
+        try {
+            const data = await getFixtures(opts);
+            console.log(data);
+            setFixtures(data.response);
+        } catch (error) {
+            console.error("Error fetching fixtures:", error);
+        }
+    };
+
+    // ✅ Fetch Fixtures When League or Date Changes
     useEffect(() => {
-       if(leagueid) getFixByLeague();
-    }, [date, leagueid])
+        if (!leagueid) return; // ✅ Correct (Condition inside the effect)
+        getFixByLeague();
+    }, [leagueid, date]);
 
   return (
 		<MainLayout setLinear={setLinear} title={"matches"}>
 			<div className={`flex flex-col min-h-[92vh] w-full ${themeClass.bg}`}>
-				<LeagueSlider active={Number(leagueid)} setLinear={setLinear} />
+				<LeagueSlider active={leagueIdNumber || 0} setLinear={setLinear} />
 				<div className="flex flex-col h-full justify-between w-full px-3">
 					<div className={`${themeClass.border} w-full border-x-2 border-b-2`}>
 						<div className="flex flex-col items-center">
 							<p>Date</p>
-							<DateSlider date={date} setDate={setDate} />
+							<DateSlider date={typeof date === "string" ? new Date(date + "T00:00:00") : date} setDate={setDate} />
 						</div>
 						<div className="flex flex-col">
 							<h1 className="font-bold text-lg mt-3 ml-3">Today's matches</h1>
@@ -49,14 +72,12 @@ const LeagueMatches = () => {
 								<p className=" mt-3 ml-3">No matches on this date</p>
 							)}
 							<div className={`flex flex-col ${themeClass.bg} rounded-lg`}>
-								<div
-									className={`grid ltab:grid-cols-2 ltop:grid-cols-3 p-3 pt-0`}
-								>
+								<div className={`grid ltab:grid-cols-2 ltop:grid-cols-3 p-3 pt-0`}>
 									{fixtures.map((fix: any, index: any) => (
 										<Match key={index} fix={fix} setLinear={setLinear} />
 									))}
 								</div>
-								<Link href="matches">
+								<Link href="/matches"> {/* ✅ Fixed Link */}
 									<p className="text-orange-600 mx-3 cursor-pointer hover:underline mb-2">
 										See All Matches
 									</p>
@@ -71,4 +92,4 @@ const LeagueMatches = () => {
 	);
 }
 
-export default LeagueMatches
+export default LeagueMatches;

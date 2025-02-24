@@ -77,7 +77,7 @@ const MatchesById = () => {
         </div>
         <div className="grid grid-cols-3 max-w-[800px] w-4/5 mx-auto mt-4">
           <div className="flex-col flex items-center">
-            <img
+            <Image
               onClick={() => goToTeam(match?.teams?.home?.id)}
               className="ltab:w-[100px] phone:w-[80px] w-[60px] cursor-pointer"
               src={match?.teams?.home?.logo}
@@ -112,7 +112,7 @@ const MatchesById = () => {
             </p>
           </div>
           <div className="flex-col flex items-center">
-            <img
+            <Image
               onClick={() => goToTeam(match?.teams?.away?.id)}
               className="ltab:w-[100px] phone:w-[80px] w-[60px] cursor-pointer"
               src={match?.teams?.away?.logo}

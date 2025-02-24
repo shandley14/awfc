@@ -40,7 +40,7 @@ const Team = () => {
           <>
             {/* Team Banner */}
             <div className="w-full max-w-4xl">
-              <img className="w-full h-48 object-cover rounded-md" src={teamDetails?.venue.image} alt="" />
+              <Image className="w-full h-48 object-cover rounded-md" src={teamDetails?.venue.image} alt="" />
             </div>
 
             {/* Team Info Section */}
