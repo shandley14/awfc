@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 interface appContextType {
@@ -91,7 +91,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	};
 
-	const getSavedTheme = () => {
+	const getSavedTheme = useCallback(() => {
 		const localIsDark = localStorage.getItem("theme");
 		const sysTheme =
 			window.matchMedia &&
@@ -115,11 +115,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 			setIsDark(true);
 			setThemeClass(themes.dark);
 		}
-	};
+	}, []);
 
 	useEffect(() => {
 		getSavedTheme();
-	}, []);
+	}, [getSavedTheme]);
 
 	useEffect(() => {
 		if (isDark !== "") {

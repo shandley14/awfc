@@ -12,12 +12,22 @@ import Link from 'next/link';
 
 const DEFAULT_LEAGUE_ID = '39'; // Default to EPL, change later if needed
 
+
+
 // Accept an optional season prop along with leagueId.
 const Feed = ({ leagueId, season }: { leagueId?: string, season?: string | number }) => {
   const { themeClass, setMobile } = useApp();
   const [linear, setLinear] = useState(false);
-  const [fixtures, setFixtures] = useState([]);
+  const [fixtures, setFixtures] = useState<Fixture[]>([]); // ✅ TypeScript now knows fixtures is an array of Fixture objects
   const [standings, setStandings] = useState<any>(null);
+
+  interface League {
+    name: string;
+  }
+  
+  interface Fixture {
+    league: League;
+  }
 
   const currentLeague = leagueId || DEFAULT_LEAGUE_ID; // Use provided ID or fallback
   // Use the passed season if provided; otherwise, fall back to the current season.
@@ -25,7 +35,7 @@ const Feed = ({ leagueId, season }: { leagueId?: string, season?: string | numbe
 
   const fetchFixtures = async () => {
     const opts = {
-      params: { season: currentSeason, league: currentLeague, date: date },
+      params: { season: currentSeason, league: Number(currentLeague), date: date },
       headers: { 'Content-Type': 'application/json' }
     };
     const data = await getFixtures(opts);

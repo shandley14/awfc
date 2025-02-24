@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React from "react";
 import { useApp } from "../constants/contexts/AppContext";
+import Image from "next/image";
 
 const Match = ({ fix, setLinear }: any) => {
 	const {
@@ -37,7 +38,7 @@ const Match = ({ fix, setLinear }: any) => {
 			<div className="flex items-center">
 				<div className="flex flex-col items-center cursor-pointer">
 					{/* <img src="" alt="h logo" /> */}
-					<img
+					<Image
 						className="phone:max-w-[70px] xs:max-w-[60px] max-w-[40px]"
 						src={home.logo}
 						alt={home.name}
@@ -50,7 +51,7 @@ const Match = ({ fix, setLinear }: any) => {
 							{score.fulltime.home}
 						</p>
 						<div className="flex mx-3 flex-col items-center">
-							<img
+							<Image
 								className="xs:max-w-[50px] max-w-[30px] h-[50px]"
 								src={logo}
 								alt={name}
@@ -64,7 +65,7 @@ const Match = ({ fix, setLinear }: any) => {
 				) : (
 					<>
 						<div className="flex mx-3 flex-col items-center">
-							<img
+							<Image
 								className="max-w-[50px] rounded-full"
 								src={logo}
 								alt={name}
@@ -85,7 +86,7 @@ const Match = ({ fix, setLinear }: any) => {
 					className="flex flex-col items-center cursor-pointer"
 				>
 					{/* <img src="" alt="a logo" /> */}
-					<img
+					<Image
 						className="phone:max-w-[70px] xs:max-w-[60px] max-w-[40px]"
 						src={away.logo}
 						alt={away.name}

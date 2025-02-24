@@ -18,7 +18,7 @@ const getTodayInUserTimezone = () => {
     return new Date(now.getFullYear(), now.getMonth(), now.getDate());
 };
 
-const Home = () => {
+const Matches = () => {
     const { themeClass, setMobile } = useApp();
     const router = useRouter();
     const [fixtures, setFixtures] = useState<any>([]);
@@ -39,9 +39,9 @@ const Home = () => {
     // ✅ Ensure URL has `date` parameter when page loads
     useEffect(() => {
         if (!router.isReady) return;
-    
+
         const urlDate = router.query.date as string | undefined;
-    
+
         if (!urlDate) {
             const todayFormatted = format(getTodayInUserTimezone(), "yyyy-MM-dd");
             router.replace(`/?date=${todayFormatted}`, undefined, { shallow: true });
@@ -52,30 +52,35 @@ const Home = () => {
                 getFixByLeague(); // 🔥 Fetch fixtures when date is set
             }
         }
-    }, [router.isReady, router.query.date]);    
-    
+    }, [router.isReady, router.query.date]);
+
 
     // ✅ Handle Date Change - Updates both state and URL
-    const handleDateChange = (newDate: Date | string) => {
-        const parsedDate = typeof newDate === "string" ? new Date(newDate + "T00:00:00") : newDate;
+    const handleDateChange: React.Dispatch<React.SetStateAction<string | Date>> = (newDate) => {
+        // Resolve if `newDate` is a function
+        const resolvedDate = typeof newDate === "function" ? newDate(selectedDate) : newDate;
+    
+        // Convert string to Date if needed
+        const parsedDate = typeof resolvedDate === "string" ? new Date(resolvedDate + "T00:00:00") : resolvedDate;
+    
         if (!parsedDate || isNaN(parsedDate.getTime())) return;
-
+    
         const formattedDate = format(parsedDate, "yyyy-MM-dd");
         const queryLeague = router.query.league;
-
-        // Construct the new URL and include league if present
+    
         let newUrl = `/?date=${formattedDate}`;
         if (queryLeague) {
             newUrl += `&league=${queryLeague}`;
         }
-
-        // Update the URL only if the date actually changes
+    
         if (router.query.date !== formattedDate) {
             router.push(newUrl, undefined, { shallow: true });
         }
-
+    
         setSelectedDate(parsedDate);
     };
+    
+    
 
 
     const determineLeagueSeason = (leagueObj: any, selected: Date) => {
@@ -95,39 +100,39 @@ const Home = () => {
     // ✅ Modified to check for a league query param and only fetch that league if set
     const getFixByLeague = async () => {
         if (!selectedDate || !isValid(selectedDate)) return;
-    
+
         const leagues = await getLeagues();
         if (!leagues || leagues.length === 0) return;
-    
+
         const leagueQuery = router.query.league as string | undefined;
         let leaguesToFetch = leagues;
-    
+
         if (leagueQuery) {
             const leagueIdQuery = parseInt(leagueQuery, 10);
             leaguesToFetch = leagues.filter((leagueObj: any) => leagueObj.league.id === leagueIdQuery);
         }
-    
+
         let allFixtures: any[] = [];
         const formattedDate = format(selectedDate, "yyyy-MM-dd");
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    
+
         for (const leagueObj of leaguesToFetch) {
             const leagueId = leagueObj.league.id;
             const leagueSeason = getRecentSeason(leagueObj);
-    
+
             // 🔥 Skip leagues where the most recent season is not 2024 or 2025
             if (leagueSeason !== 2024 && leagueSeason !== 2025) {
                 console.log(`Skipping league ${leagueId}: Season ${leagueSeason} is not 2024 or 2025.`);
                 continue;
             }
-    
+
             console.log(`Fetching fixtures for League ID ${leagueId}, Season ${leagueSeason}, Date ${formattedDate}`);
-    
+
             const opts = {
                 params: { season: leagueSeason, date: formattedDate, league: leagueId, timezone },
                 headers: { "Content-Type": "application/json" },
             };
-    
+
             try {
                 const data = await getFixtures(opts);
                 if (data && data.response) {
@@ -137,34 +142,44 @@ const Home = () => {
                 console.error(`Error fetching fixtures for league ${leagueId}:`, error);
             }
         }
-    
+
         setFixtures(allFixtures);
     };
-    
+
 
     // ✅ Added router.query.league to the dependency array to re-run when league changes
     useEffect(() => {
         if (!router.isReady || !selectedDate || !isValid(selectedDate)) return;
         getFixByLeague();
     }, [router.isReady, selectedDate, router.query.league]);
-    
+
 
     // Group fixtures by country then league
-    const groupedFixturesByCountry = useMemo(() => {
-        return fixtures.reduce((acc: any, fixture: any) => {
-            // Assuming fixture.league.country contains the country name
-            const country = fixture.league.country || "Other";
+    interface LeagueGroup {
+        league: { id: number; name: string };
+        fixtures: any[];
+    }
+
+    const groupedFixturesByCountry: Record<string, Record<number, LeagueGroup>> = useMemo(() => {
+        return fixtures.reduce((acc: Record<string, Record<number, LeagueGroup>>, fixture: any) => {
+            const country = fixture.league?.country || "Other";
+
             if (!acc[country]) {
                 acc[country] = {};
             }
-            const leagueId = fixture.league.id;
+
+            const leagueId = fixture.league?.id || 0;
+
             if (!acc[country][leagueId]) {
                 acc[country][leagueId] = { league: fixture.league, fixtures: [] };
             }
+
             acc[country][leagueId].fixtures.push(fixture);
+
             return acc;
         }, {});
     }, [fixtures]);
+
 
     return (
         <MainLayout setLinear={setLinear} title={"matches"}>
@@ -175,22 +190,24 @@ const Home = () => {
                             <DateSlider date={selectedDate} setDate={handleDateChange} />
                         </div>
                         <div className="flex flex-col">
-                            
+
                             {fixtures?.length === 0 && <p className="mt-3 ml-3">No matches on this date</p>}
                             <div className={`flex flex-col ${themeClass.bg} rounded-lg`}>
                                 {Object.entries(groupedFixturesByCountry).map(([country, leagues]) => (
                                     <div key={country}>
                                         <h2 className="font-bold text-2xl mt-4 ml-3">{country}</h2>
-                                        {Object.values(leagues).map((group: any) => (
-                                            <div key={group.league.id}>
-                                                <h3 className="font-bold text-xl mt-3 ml-3">{group.league.name}</h3>
-                                                <div className="grid ltab:grid-cols-2 ltop:grid-cols-3 p-3 pt-0">
-                                                    {group.fixtures.map((fix: any, index: number) => (
-                                                        <Match key={index} fix={fix} setLinear={setLinear} />
-                                                    ))}
+                                        {leagues && typeof leagues === 'object' &&
+                                            Object.values(leagues).map((group: LeagueGroup) => (
+                                                <div key={group.league.id}>
+                                                    <h3 className="font-bold text-xl mt-3 ml-3">{group.league.name}</h3>
+                                                    <div className="grid ltab:grid-cols-2 ltop:grid-cols-3 p-3 pt-0">
+                                                        {group.fixtures.map((fix: any, index: number) => (
+                                                            <Match key={index} fix={fix} setLinear={setLinear} />
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            ))
+                                        }
                                     </div>
                                 ))}
                             </div>
@@ -202,4 +219,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default Matches;

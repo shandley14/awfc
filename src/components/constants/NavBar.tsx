@@ -18,7 +18,7 @@ const NavBar = () => {
         <div className='phone:scale-100 scale-75 flex items-center' >
             <Link href='/'>
                 <>
-                All Women's Football - BETA
+                All Women&apos;s Football - BETA
                 </>
             </Link>
             

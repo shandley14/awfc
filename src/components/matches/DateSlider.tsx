@@ -1,19 +1,19 @@
 import React from 'react';
-import { addDays } from 'date-fns';
+import { addDays, format } from 'date-fns';
 import DatePicker from './DatePicker';
 
 interface DateSliderProps {
   date: Date;
-  setDate: React.Dispatch<React.SetStateAction<Date>>;
+  setDate: React.Dispatch<React.SetStateAction<string | Date>>; // ✅ Ensure it's a state setter function
 }
 
 const DateSlider: React.FC<DateSliderProps> = ({ date, setDate }) => {
   const handlePrevDay = () => {
-    setDate(addDays(date, -1));
+    setDate((prev) => format(addDays(new Date(prev), -1), "yyyy-MM-dd")); // ✅ Proper state setter function
   };
 
   const handleNextDay = () => {
-    setDate(addDays(date, 1));
+    setDate((prev) => format(addDays(new Date(prev), 1), "yyyy-MM-dd")); // ✅ Proper state setter function
   };
 
   return (
@@ -27,8 +27,8 @@ const DateSlider: React.FC<DateSliderProps> = ({ date, setDate }) => {
       </button>
 
       {/* DatePicker in the center */}
-      <DatePicker date={date} setDate={setDate} />
-
+      <DatePicker date={date} setDate={(newDate) => setDate(newDate)} /> {/* ✅ Ensure correct type */}
+      
       {/* Right Arrow */}
       <button
         onClick={handleNextDay}

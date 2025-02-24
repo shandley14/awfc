@@ -8,6 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Link from 'next/link';
 import { useApp } from '../../components/constants/contexts/AppContext';
+import Image from 'next/image';
 
 export default function Standings({data}: any) {
   const { isDark } = useApp();
@@ -34,7 +35,7 @@ export default function Standings({data}: any) {
               <TableCell sx={{color: isDark?'white':'black', ":hover": { cursor: 'pointer'}}} component="th" scope="row">
                <div className={`flex w-full ${isDark&&'text-white'} h-full items-center`}>
                 <p>{row.rank}</p>
-                <Link href={`/teams/${row.team.id}`}><img className='w-[20px] bg-[] mx-2 h-[20px] object-cover' src={row.team.logo} alt="" /></Link>
+                <Link href={`/teams/${row.team.id}`}><Image className='w-[20px] bg-[] mx-2 h-[20px] object-cover' src={row.team.logo} alt="" /></Link>
                 <p>{row.team.name}</p>
                </div>
               </TableCell>

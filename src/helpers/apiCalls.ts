@@ -26,15 +26,18 @@ export const getLeagues = async (_opts?: object) => {
 };
 
 
-export const getFixtures = async (_opts = {}) => {
+export const getFixtures = async (_opts: {
+  headers: {}; params?: { season?: number; date?: string; league?: number; timezone?: string } 
+}) => {
     try {
       // Remove the "params" property so it doesn't get appended automatically.
-      const { params, ...restOpts } = _opts;
+      const { params, ...restOpts } = _opts || {};
       const { season, date, league, timezone } = params || {};
   
       // Ensure the date is in YYYY-MM-DD format.
-      const formattedDate =
-        date instanceof Date ? date.toISOString().split('T')[0] : date;
+      const formattedDate = date ? new Date(date).toISOString().split('T')[0] : '';
+
+
   
       // Build the query string.
       let query = `season=${season}&date=${formattedDate}`;

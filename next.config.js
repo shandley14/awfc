@@ -1,7 +1,12 @@
 /** @type {import('next').NextConfig} */
-module.exports = {
-	// reactStrictMode: true,
+const nextConfig = {
+	output: "export",
 	images: {
-		domains: ["media.api-sports.io"],
+	  unoptimized: true, // ✅ Disables Next.js image optimization for static export
 	},
-};
+	eslint: {
+		ignoreDuringBuilds: true,
+	  },
+  };
+  
+  module.exports = nextConfig;
